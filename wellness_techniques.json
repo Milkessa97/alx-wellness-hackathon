@@ -1,0 +1,82 @@
+[
+  {
+    "id": "T001",
+    "title": "Box Breathing",
+    "description": "Box breathing is a simple technique where you inhale for 4 counts, hold for 4, exhale for 4, and hold again for 4. It activates the parasympathetic nervous system, helping reduce feelings of stress and restlessness. It can be practiced anywhere and requires no equipment.",
+    "evidence_category": "mindfulness-based",
+    "tier": ["safe", "elevated"],
+    "source": "NHS UK — https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/"
+  },
+  {
+    "id": "T002",
+    "title": "Behavioral Activation — Small Steps",
+    "description": "Behavioral activation involves scheduling small, manageable activities that bring a sense of accomplishment or pleasure, even when motivation is low. It is rooted in the observation that action often precedes motivation, not the other way around. Starting with a 5-minute walk or making one phone call counts.",
+    "evidence_category": "behavioral activation",
+    "tier": ["safe", "elevated"],
+    "source": "NIMH — https://www.nimh.nih.gov/health/topics/depression"
+  },
+  {
+    "id": "T003",
+    "title": "Grounding: The 5-4-3-2-1 Technique",
+    "description": "This grounding exercise asks you to name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1 you can taste. It anchors attention to the present moment and is particularly useful when thoughts feel overwhelming or circular. It requires no special setting.",
+    "evidence_category": "mindfulness-based",
+    "tier": ["safe", "elevated"],
+    "source": "VA/DoD Clinical Practice Guideline (public summary) — https://www.mentalhealth.va.gov"
+  },
+  {
+    "id": "T004",
+    "title": "Journaling for Emotional Clarity",
+    "description": "Writing about thoughts and feelings — without judgment — helps externalize internal states, making them easier to observe. Even 10 minutes of unstructured journaling has been linked to reduced rumination in psychoeducational literature. The goal is expression, not analysis.",
+    "evidence_category": "CBT-derived",
+    "tier": ["safe"],
+    "source": "APA Public Education — https://www.apa.org/topics/writing-health"
+  },
+  {
+    "id": "T005",
+    "title": "Sleep Hygiene Basics",
+    "description": "Consistent sleep and wake times, avoiding screens 30 minutes before bed, and keeping the bedroom cool and dark are foundational wellness practices. Poor sleep significantly worsens mood and cognitive function, and improving sleep hygiene is often the most accessible lever for wellbeing.",
+    "evidence_category": "behavioral activation",
+    "tier": ["safe", "elevated"],
+    "source": "NHS UK — https://www.nhs.uk/every-mind-matters/mental-health-tips/how-to-fall-asleep-faster-and-sleep-better/"
+  },
+  {
+    "id": "T006",
+    "title": "Social Connection — Reaching Out",
+    "description": "Isolation tends to amplify negative feelings. Psychoeducational guidance consistently highlights that even brief, low-effort social contact — texting a friend, sitting in a café — can interrupt the cycle of withdrawal. The quality of connection matters less than the act of initiating it.",
+    "evidence_category": "behavioral activation",
+    "tier": ["safe", "elevated"],
+    "source": "NIMH — https://www.nimh.nih.gov/health/topics/depression"
+  },
+  {
+    "id": "T007",
+    "title": "Progressive Muscle Relaxation",
+    "description": "Progressive muscle relaxation involves tensing and then deliberately releasing muscle groups across the body, from feet to face. It builds awareness of physical tension and trains the body's relaxation response. A full session takes 10–15 minutes and is most effective practiced daily.",
+    "evidence_category": "mindfulness-based",
+    "tier": ["safe", "elevated"],
+    "source": "NHS UK — https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/muscle-relaxation-for-stress-anxiety/"
+  },
+  {
+    "id": "T008",
+    "title": "Limiting News and Social Media",
+    "description": "Passive consumption of distressing news and social media has been associated with increased feelings of hopelessness and anxiety. Setting a defined time window (e.g. 15 minutes at a fixed hour) for news consumption helps maintain awareness while protecting emotional bandwidth.",
+    "evidence_category": "CBT-derived",
+    "tier": ["safe"],
+    "source": "APA Stress in America Report (public summary) — https://www.apa.org/news/press/releases/stress"
+  },
+  {
+    "id": "T009",
+    "title": "Noticing Unhelpful Thought Patterns",
+    "description": "CBT-derived psychoeducation teaches that certain habitual thought patterns — catastrophizing, all-or-nothing thinking, mind-reading — tend to amplify distress. Simply learning to name a pattern when it appears ('there's that all-or-nothing thinking again') can reduce its intensity without needing to argue with it.",
+    "evidence_category": "CBT-derived",
+    "tier": ["safe", "elevated"],
+    "source": "NHS — https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/raise-low-self-esteem/"
+  },
+  {
+    "id": "T010",
+    "title": "Physical Movement — Any Kind",
+    "description": "Even low-intensity movement — a 10-minute walk, stretching, dancing alone — triggers the release of endorphins and interrupts sedentary cycles that tend to worsen low mood. Psychoeducational guidelines emphasize that any movement counts; perfection is not the goal.",
+    "evidence_category": "behavioral activation",
+    "tier": ["safe", "elevated"],
+    "source": "NHS UK — https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/tips-to-improve-your-mental-health/"
+  }
+]
