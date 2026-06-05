@@ -26,6 +26,6 @@ stripe==9.4.0
 supabase==2.10.0
 typing_extensions==4.15.0
 tzdata==2025.2
-uvicorn[standard]==0.48.0
+uvicorn==0.48.0
 watchfiles==1.2.0
-websockets==16.0
+websockets==14.0
