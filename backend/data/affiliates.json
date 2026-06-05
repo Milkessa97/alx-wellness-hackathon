@@ -1,0 +1,62 @@
+[
+  {
+    "id": "A001",
+    "name": "BetterHelp",
+    "description": "Online therapy with licensed therapists. Sessions via video, phone, or chat.",
+    "price_range": "From $60–$100/week",
+    "best_for": ["Depression", "Anxiety", "Stress", "Relationships"],
+    "url": "https://www.betterhelp.com",
+    "affiliate": true,
+    "affiliate_disclosure": "We may receive a referral fee if you sign up.",
+    "sliding_scale": false,
+    "free_option": false
+  },
+  {
+    "id": "A002",
+    "name": "Talkspace",
+    "description": "Text, audio, and video therapy with licensed providers. Accepts some insurance.",
+    "price_range": "From $69/week",
+    "best_for": ["Depression", "Anxiety", "Trauma", "LGBTQ+"],
+    "url": "https://www.talkspace.com",
+    "affiliate": true,
+    "affiliate_disclosure": "We may receive a referral fee if you sign up.",
+    "sliding_scale": false,
+    "free_option": false
+  },
+  {
+    "id": "A003",
+    "name": "Open Path Collective",
+    "description": "Affordable in-person and online therapy. Sliding scale sessions for those in financial need.",
+    "price_range": "$30–$80 per session",
+    "best_for": ["All concerns", "Financial accessibility"],
+    "url": "https://openpathcollective.org",
+    "affiliate": false,
+    "affiliate_disclosure": null,
+    "sliding_scale": true,
+    "free_option": false
+  },
+  {
+    "id": "A004",
+    "name": "7 Cups",
+    "description": "Free peer support and trained listener chats. Paid therapy also available.",
+    "price_range": "Free peer support / $150/month for therapy",
+    "best_for": ["Immediate support", "Loneliness", "Mild anxiety"],
+    "url": "https://www.7cups.com",
+    "affiliate": false,
+    "affiliate_disclosure": null,
+    "sliding_scale": false,
+    "free_option": true
+  },
+  {
+    "id": "A005",
+    "name": "Befrienders Worldwide",
+    "description": "Global directory of volunteer-run emotional support centers. Free, confidential.",
+    "price_range": "Free",
+    "best_for": ["Crisis support", "Loneliness", "Suicidal thoughts"],
+    "url": "https://www.befrienders.org",
+    "affiliate": false,
+    "affiliate_disclosure": null,
+    "sliding_scale": false,
+    "free_option": true
+  }
+]

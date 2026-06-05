@@ -22,14 +22,24 @@ SAFE_DISCLAIMER = (
 )
 
 
-def build_system_prompt(techniques: List[Dict], score: int, tier: str) -> str:
+def build_system_prompt(techniques: List[Dict], score: int, tier: str, trend_context: str = "") -> str:
     """
     Constructs the system prompt using the closed-context synthesis pattern.
-    Order: (1) hard constraint, (2) corpus, (3) user context.
+    Order: (1) hard constraint, (2) corpus, (3) user context, (4) optional trend context, (5) task.
     This order is intentional: the constraint must be read before the corpus
     so the model encounters the restriction before any generative material.
+
+    Args:
+        techniques: List of technique dicts from the corpus.
+        score: The user's PHQ-9 score.
+        tier: The classified severity tier.
+        trend_context: Optional trend context string from trend.get_trend_prompt_context().
+                       If empty, nothing is injected.
     """
     corpus_text = format_corpus_for_prompt(techniques)
+
+    # Build the trend block only if trend_context is non-empty
+    trend_block = f"\n{trend_context}\n" if trend_context else "\n"
 
     return f"""You are a reflective wellness writing assistant.
 
@@ -48,19 +58,25 @@ APPROVED TECHNIQUES:
 USER CONTEXT:
 PHQ-9 score: {score}
 Severity tier: {tier}
-
-TASK: Write a warm, empathetic 3–4 paragraph reflection that:
-1. Acknowledges the person's experience without labeling or diagnosing it
-2. Highlights 2–3 techniques from the approved list most relevant to their score tier
-3. Frames these techniques as options to explore, not prescriptions
-4. Ends with one sentence of genuine encouragement
+{trend_block}TASK: Write a concise, warm reflection in exactly 2 short paragraphs:
+1. First paragraph: one or two sentences acknowledging their experience — specific, not generic
+2. Second paragraph: mention 2 techniques from the approved list as gentle options, briefly
+3. Final sentence: one short, grounded encouragement — avoid hollow affirmations
+Total length: 80–120 words maximum. Be human, be brief, be real.
 
 Do not number paragraphs. Do not use bullet points. Write in flowing, human prose."""
 
 
-def generate_summary(techniques: List[Dict], score: int, tier: str) -> str:
+def generate_summary(techniques: List[Dict], score: int, tier: str, trend_context: str = "") -> str:
     """
     Calls Groq API to generate a closed-context psychoeducational reflection.
+
+    Args:
+        techniques: List of technique dicts from the corpus.
+        score: The user's PHQ-9 score.
+        tier: The classified severity tier.
+        trend_context: Optional trend context string from trend.get_trend_prompt_context().
+                       Passed through to build_system_prompt().
 
     Raises:
         ValueError: If called with crisis tier (must be caught upstream)
@@ -79,7 +95,7 @@ def generate_summary(techniques: List[Dict], score: int, tier: str) -> str:
         raise RuntimeError("GROQ_API_KEY is not set in environment variables.")
 
     client = Groq(api_key=api_key)
-    system_prompt = build_system_prompt(techniques, score, tier)
+    system_prompt = build_system_prompt(techniques, score, tier, trend_context)
 
     try:
         completion = client.chat.completions.create(

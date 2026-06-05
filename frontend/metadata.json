@@ -1,0 +1,6 @@
+{
+  "name": "PHQ-9 Assessment Dashboard",
+  "description": "An interactive Patient Health Questionnaire (PHQ-9) clinical screening tool with long-term trends and symptom analytics dashboards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

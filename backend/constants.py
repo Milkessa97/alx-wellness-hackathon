@@ -23,7 +23,7 @@ TIER_CRISIS = "crisis"
 # LLM configuration
 LLM_MODEL = "llama-3.1-8b-instant"       # Groq model
 LLM_TEMPERATURE = 0.35             # Low temp = fewer hallucinations
-LLM_MAX_TOKENS = 500               # Enough for summary, not a wall of text
+LLM_MAX_TOKENS = 200               # Enough for summary, not a wall of text
 
 # PHQ-9 question count
 PHQ9_QUESTION_COUNT = 9

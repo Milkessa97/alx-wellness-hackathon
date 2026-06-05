@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-ivory-50: #FDFBF7;
+  --color-ivory-100: #FAF7F0;
+  --color-ivory-200: #F5EFE0;
+  --color-ivory-300: #EDE3CC;
+
+  --color-ink-DEFAULT: #1A1A1A;
+  --color-ink-soft: #2D2D2D;
+  --color-ink-muted: #4A4A4A;
+  --color-ink-light: #6B6B6B;
+
+  --color-sage-100: #E8F0EB;
+  --color-sage-200: #C8DDD0;
+  --color-sage-400: #7FAF93;
+  --color-sage-600: #4A8A63;
+
+  --color-amber-100: #FDF3E0;
+  --color-amber-200: #FAE3B4;
+  --color-amber-400: #F5B942;
+  --color-amber-600: #D4891A;
+
+  --color-rose-100: #FDECEA;
+  --color-rose-400: #E87B73;
+  --color-rose-600: #C94B41;
+
+  --font-display: 'Lora', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
+  --animate-bloom: bloom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  @keyframes bloom {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  --shadow-warm-sm: 0 2px 8px rgba(26,26,26,0.06);
+  --shadow-warm-md: 0 4px 24px rgba(26,26,26,0.08);
+  --shadow-warm-lg: 0 8px 48px rgba(26,26,26,0.12);
+}
+
+:root {
+  --font-display: 'Lora', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--color-ivory-100);
+  color: var(--color-ink-DEFAULT);
+  font-family: var(--font-body);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-ivory-200);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-light);
+  border-radius: 4px;
+}
+
+/* Selection color */
+::selection {
+  background-color: var(--color-amber-200);
+}

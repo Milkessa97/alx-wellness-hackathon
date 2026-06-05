@@ -1,0 +1,32 @@
+[
+  {
+    "id": "C001",
+    "name": "Sunrise Mental Health Clinic",
+    "description": "Outpatient therapy and psychiatry. Sessions via in-person or video.",
+    "specialties": ["Depression", "Anxiety", "Stress", "Trauma"],
+    "contact_email": "intake@sunrise-clinic.example.com",
+    "accepts_referrals": true,
+    "languages": ["English", "Amharic"],
+    "response_window_hours": 24
+  },
+  {
+    "id": "C002",
+    "name": "Calm Waters Counseling",
+    "description": "Licensed counselors specializing in mood disorders and relationships.",
+    "specialties": ["Depression", "Relationships", "LGBTQ+"],
+    "contact_email": "referrals@calmwaters.example.com",
+    "accepts_referrals": true,
+    "languages": ["English"],
+    "response_window_hours": 48
+  },
+  {
+    "id": "C003",
+    "name": "Community Wellness Center",
+    "description": "Sliding-scale therapy for those with financial need.",
+    "specialties": ["All concerns", "Financial accessibility"],
+    "contact_email": "admin@communitywellness.example.com",
+    "accepts_referrals": true,
+    "languages": ["English", "French"],
+    "response_window_hours": 72
+  }
+]
