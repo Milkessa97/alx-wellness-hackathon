@@ -65,8 +65,8 @@ app.add_middleware(
         # Add your Vercel URL here before deploying:
         # "https://your-app.vercel.app",
     ],
-    allow_credentials=False,
-    allow_methods=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
 )
 
