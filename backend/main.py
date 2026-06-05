@@ -58,14 +58,15 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:5173",
-        "https://maedot-welness.vercel.app",
+        "https://maedot-wellness.vercel.app",
+        "https://www.maedot-wellness.vercel.app",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5173",
         # Add your Vercel URL here before deploying:
         # "https://your-app.vercel.app",
     ],
     allow_credentials=False,
-    allow_methods=["POST", "GET", "DELETE"],
+    allow_methods=["*"],
     allow_headers=["Content-Type", "Authorization"],
 )
 
