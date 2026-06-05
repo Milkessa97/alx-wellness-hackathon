@@ -10,7 +10,8 @@ from database import test_connection, get_user_assessments
 from auth import get_optional_user
 from gating import check_assessment_gate
 from routers import assess, history, trend, referral, auth_router, stripe_router
-
+import asyncio
+from functools import partial
 # ── Logging setup ─────────────────────────────────────────
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
@@ -96,19 +97,13 @@ async def health_check():
 
 @app.get("/api/gate")
 async def assessment_gate(current_user: Optional[dict] = Depends(get_optional_user)):
-    """
-    Lightweight gate check for the frontend to call on page load,
-    before showing (or submitting) a full assessment.
-
-    - Anonymous users are never gated — returns {"allowed": True} immediately.
-    - Authenticated users are gated by ASSESSMENT_INTERVAL_DAYS since their
-      most recent assessment.
-    """
     if current_user is None:
         return {"allowed": True}
 
     user_id = current_user["id"]
-    history = get_user_assessments(user_id)
+    loop = asyncio.get_event_loop()
+    history = await loop.run_in_executor(
+        None, partial(get_user_assessments, user_id)
+    )
     last_taken_at = history[0].get("taken_at") if history else None
-
     return check_assessment_gate(last_taken_at, is_authenticated=True)
