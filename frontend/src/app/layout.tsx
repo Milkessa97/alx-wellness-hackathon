@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HeartPulse, ShieldCheck, Heart } from 'lucide-react';
 import { Lora, DM_Sans } from 'next/font/google';
 import { AnimatePresence, motion } from 'motion/react';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { SignInButton } from '../components/auth/SignInButton';
+import { SignInModal } from '../components/auth/SignInModal';
 import { UserMenu } from '../components/auth/UserMenu';
 import { signOut } from 'next-auth/react';
 
@@ -36,7 +37,23 @@ interface RootLayoutProps {
 
 export function RootLayout({ children, onNavigateHome, onNavigateToHistory }: RootLayoutProps) {
   const pathname = usePathname();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
+  const [showSignInModal, setShowSignInModal] = useState(false);
+
+  // After a successful sign-in, check if this is the user's first visit.
+  // If they haven't seen the pricing page yet, redirect them there.
+  const prevStatusRef = React.useRef(status);
+  useEffect(() => {
+    if (prevStatusRef.current !== 'authenticated' && status === 'authenticated') {
+      const hasSeenPricing = localStorage.getItem('maedot_has_seen_pricing');
+      if (!hasSeenPricing) {
+        localStorage.setItem('maedot_has_seen_pricing', 'true');
+        window.history.pushState({}, '', '/pricing');
+        window.dispatchEvent(new Event('navigationchange'));
+      }
+    }
+    prevStatusRef.current = status;
+  }, [status]);
 
   // Apply font variables and metadata page tags on component mount
   useEffect(() => {
@@ -109,8 +126,12 @@ export function RootLayout({ children, onNavigateHome, onNavigateToHistory }: Ro
 
   <button
     onClick={() => {
-      window.history.pushState({}, '', '/pricing');
-      window.dispatchEvent(new Event('navigationchange'));
+      if (status !== 'authenticated') {
+        setShowSignInModal(true);
+      } else {
+        window.history.pushState({}, '', '/pricing');
+        window.dispatchEvent(new Event('navigationchange'));
+      }
     }}
     className={`text-xs font-semibold px-4 py-1.5 rounded-full bg-sage-600 text-white hover:opacity-90 transition-opacity cursor-pointer ${
       pathname === '/pricing' ? 'ring-2 ring-sage-400 ring-offset-1 ring-offset-ivory-50' : ''
@@ -140,6 +161,14 @@ export function RootLayout({ children, onNavigateHome, onNavigateToHistory }: Ro
 
   <UserMenu />
 </div>
+
+        {/* Sign-in modal triggered by Go Premium for unauthenticated users */}
+        <SignInModal
+          isOpen={showSignInModal}
+          onClose={() => setShowSignInModal(false)}
+          title="Sign in to explore plans"
+          description="Create an account or sign in to view pricing and start your wellness journey."
+        />
         </div>
       </header>
 

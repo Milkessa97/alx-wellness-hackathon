@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime, date, timezone
 from groq import Groq
 from dotenv import load_dotenv
+from constants import LLM_MODEL
 
 # Initialize groq client
 load_dotenv()
@@ -65,7 +66,7 @@ async def generate_action_plan(user_id: str, db) -> list[dict]:
     
     try:
         completion = groq_client.chat.completions.create(
-            model="llama3-8b-8192",
+            model=LLM_MODEL,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
