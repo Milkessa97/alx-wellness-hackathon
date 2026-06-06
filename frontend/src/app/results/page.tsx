@@ -306,7 +306,7 @@ export function ResultsPage({ latestResult, onRetake, onNavigateHome }: ResultsP
                   <Button
                     variant="primary"
                     onClick={onNavigateHome}
-                    className="gap-2 bg-sage-600 hover:bg-sage-700 text-white text-sm rounded-xl px-6 py-3"
+                    className="gap-2 bg-sage-500 hover:bg-sage-600 text-white text-sm rounded-xl px-6 py-3"
                   >
                     <Home className="w-4 h-4" /> Return home
                   </Button>
@@ -322,21 +322,21 @@ export function ResultsPage({ latestResult, onRetake, onNavigateHome }: ResultsP
                         window.history.pushState({}, '', '/book');
                         window.dispatchEvent(new Event('navigationchange'));
                       }}
-                      className="gap-2 bg-sage-600 hover:bg-sage-700 text-white text-sm rounded-xl px-6 py-3"
+                      className="gap-2 bg-sage-500 hover:bg-sage-600 text-white text-sm rounded-xl px-6 py-3"
                     >
                       <Calendar className="w-4 h-4" /> Book appointment
                     </Button>
                     <Button
-                      variant="ghost"
+                      variant="primary"
                       onClick={onRetake}
-                      className="gap-2 text-sm rounded-xl px-5 py-3 border-ink/20"
+                      className="gap-2 text-sm rounded-xl px-5 py-3 bg-sage-500 hover:bg-sage-600 text-white border-transparent"
                     >
                       <RefreshCw className="w-3.5 h-3.5" /> Retake
                     </Button>
                     <Button
-                      variant="ghost"
+                      variant="primary"
                       onClick={onNavigateHome}
-                      className="gap-2 text-sm rounded-xl px-5 py-3 border-ink/20"
+                      className="gap-2 text-sm rounded-xl px-5 py-3 bg-sage-500 hover:bg-sage-600 text-white border-transparent"
                     >
                       <Home className="w-3.5 h-3.5" /> Home
                     </Button>

@@ -41,6 +41,22 @@ def build_system_prompt(techniques: List[Dict], score: int, tier: str, trend_con
     # Build the trend block only if trend_context is non-empty
     trend_block = f"\n{trend_context}\n" if trend_context else "\n"
 
+    # Inject cultural context only for safe and elevated tiers.
+    # Crisis tier never reaches this function (hard guard in generate_summary()),
+    # so this check is belt-and-suspenders for safe/elevated only.
+    _cultural_tiers = {TIER_SAFE, TIER_ELEVATED}
+    if tier in _cultural_tiers:
+        cultural_context_block = (
+            "\nCULTURAL CONTEXT:\n"
+            "This tool is used primarily in Ethiopia. Ethiopian help-seeking commonly includes "
+            "family support, religious community, and traditional healing before professional care. "
+            "When relevant to the user's score and tier, prioritize techniques that involve "
+            "community, social connection, and faith-sensitive framing. Never dismiss traditional "
+            "coping — acknowledge it as meaningful while introducing evidence-based complements.\n"
+        )
+    else:
+        cultural_context_block = "\n"
+
     return f"""You are a reflective wellness writing assistant.
 
 STRICT CONSTRAINT: You must only reference and synthesize from the APPROVED TECHNIQUES listed below. You may NOT:
@@ -51,7 +67,7 @@ STRICT CONSTRAINT: You must only reference and synthesize from the APPROVED TECH
 - Use the word "diagnosis", "disorder", "symptom", "treatment", or "condition"
 
 If you cannot address the user's context within this approved material, you must say so explicitly rather than introducing outside content.
-
+{cultural_context_block}
 APPROVED TECHNIQUES:
 {corpus_text}
 

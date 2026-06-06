@@ -241,13 +241,13 @@ export function ElevatedResult({ result, recommendations, trend, milestones }: E
             <button
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full flex justify-between items-center text-ink-soft hover:text-amber-700 transition-colors focus:outline-none cursor-pointer"
+              className="w-full flex justify-between items-center bg-sage-500 hover:bg-sage-600 text-white transition-colors focus:outline-none cursor-pointer px-4 py-3 rounded-xl"
             >
-              <span className="text-sm font-sans font-bold flex items-center gap-2 uppercase tracking-wide text-ink-muted">
-                <History className="w-4 h-4 text-amber-650" />
+              <span className="text-sm font-sans font-bold flex items-center gap-2 uppercase tracking-wide">
+                <History className="w-4 h-4" />
                 {isExpanded ? 'Hide analytical trends' : 'View your recent check-ins'}
               </span>
-              {isExpanded ? <ChevronUp className="w-5 h-5 text-ink-muted" /> : <ChevronDown className="w-5 h-5 text-ink-muted" />}
+              {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </button>
 
             <AnimatePresence>

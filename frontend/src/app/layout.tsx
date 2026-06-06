@@ -133,7 +133,7 @@ export function RootLayout({ children, onNavigateHome, onNavigateToHistory }: Ro
         window.dispatchEvent(new Event('navigationchange'));
       }
     }}
-    className={`text-xs font-semibold px-4 py-1.5 rounded-full bg-sage-600 text-white hover:opacity-90 transition-opacity cursor-pointer ${
+    className={`text-xs font-semibold px-4 py-1.5 rounded-full bg-sage-500 text-white hover:opacity-90 transition-opacity cursor-pointer ${
       pathname === '/pricing' ? 'ring-2 ring-sage-400 ring-offset-1 ring-offset-ivory-50' : ''
     }`}
   >
@@ -195,7 +195,7 @@ export function RootLayout({ children, onNavigateHome, onNavigateToHistory }: Ro
               Reflect • Clinical Self-Evaluation
             </p>
             <p className="text-ink-muted/80 text-[11px] leading-relaxed max-w-md mt-1">
-              An educational implementation of the validated Patient Health Questionnaire (PHQ-9). Built for ultimate privacy, no personal screening results are ever sent to an external server.
+              An educational implementation of the validated Patient Health Questionnaire (PHQ-9). Private and secure — we never store your raw responses.
             </p>
           </div>
 

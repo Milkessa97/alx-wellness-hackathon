@@ -284,16 +284,16 @@ export function HomePage({ history, onStartAssessment, onNavigateToHistory }: Ho
                   variant="primary" 
                   size="lg" 
                   onClick={handleNavigateDashboard}
-                  className={`${gateAllowed ? 'w-1/2' : 'w-full max-w-xs'} gap-2 bg-sage-600 hover:bg-sage-700 text-white font-sans font-semibold text-sm transition-all shadow-warm-lg`}
+                  className={`${gateAllowed ? 'w-1/2' : 'w-full max-w-xs'} gap-2 bg-sage-500 hover:bg-sage-600 text-white font-sans font-semibold text-sm transition-all shadow-warm-lg`}
                 >
                   Go to Dashboard
                 </Button>
                 {gateAllowed && (
                   <Button 
-                    variant="ghost" 
+                    variant="primary" 
                     size="lg" 
                     onClick={onStartAssessment}
-                    className="w-1/2 gap-2 text-ink hover:bg-ivory-200 font-sans font-semibold text-sm transition-all border border-ink"
+                    className="w-1/2 gap-2 bg-sage-500 hover:bg-sage-600 text-white font-sans font-semibold text-sm transition-all border-transparent"
                   >
                     New Check-in
                   </Button>
@@ -306,7 +306,7 @@ export function HomePage({ history, onStartAssessment, onNavigateToHistory }: Ho
                 variant="primary" 
                 size="lg" 
                 onClick={onStartAssessment}
-                className="w-full gap-2.5 bg-sage-600 hover:bg-sage-700 text-white font-sans font-semibold text-sm transition-all shadow-warm-lg"
+                className="w-full gap-2.5 bg-sage-500 hover:bg-sage-600 text-white font-sans font-semibold text-sm transition-all shadow-warm-lg"
               >
                 Begin Reflection →
               </Button>
@@ -315,7 +315,7 @@ export function HomePage({ history, onStartAssessment, onNavigateToHistory }: Ho
               {history.length > 0 && (
                 <button
                   onClick={onNavigateToHistory}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-600 hover:text-sage-700 transition-colors uppercase tracking-wider bg-transparent border-none cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold bg-sage-500 hover:bg-sage-600 text-white px-3 py-1.5 rounded-xl transition-colors uppercase tracking-wider cursor-pointer"
                 >
                   <History className="w-3.5 h-3.5" />
                   View Previous ({history.length})
@@ -340,7 +340,7 @@ export function HomePage({ history, onStartAssessment, onNavigateToHistory }: Ho
           {[
             {
               icon: <Shield className="w-4 h-4 text-sage-600 shrink-0" />,
-              text: "Private — nothing leaves your device",
+              text: "Private and secure — we never store your raw responses",
             },
             {
               icon: <Heart className="w-4 h-4 text-sage-600 shrink-0" />,

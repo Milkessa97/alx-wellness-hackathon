@@ -78,5 +78,37 @@
     "evidence_category": "behavioral activation",
     "tier": ["safe", "elevated"],
     "source": "NHS UK — https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/tips-to-improve-your-mental-health/"
+  },
+  {
+    "id": "T011",
+    "title": "Talking with Trusted Family Members",
+    "description": "Sharing what you are carrying with a trusted family member can ease the weight of difficult feelings and break the isolation that often accompanies low mood. Research on Ethiopian help-seeking behaviour shows that family is frequently the first and most important source of support, and that opening up to someone who knows you can be a meaningful first step. Even a brief, honest conversation — not seeking solutions, just being heard — has real value.",
+    "evidence_category": "behavioral activation",
+    "tier": ["safe", "elevated"],
+    "source": "Springer — https://link.springer.com/article/10.1186/1471-244X-11-138"
+  },
+  {
+    "id": "T012",
+    "title": "Religious Fellowship and Spiritual Community",
+    "description": "Participation in a religious or spiritual community — whether a church, mosque, or other faith gathering — offers regular social connection, shared routine, and a sense of belonging that can buffer against feelings of hopelessness and isolation. The protective effect comes primarily from community and collective practice rather than doctrine alone. Showing up, even without expectation, can be enough.",
+    "evidence_category": "mindfulness-based",
+    "tier": ["safe", "elevated"],
+    "source": "Springer — https://link.springer.com/article/10.1186/1471-244X-11-138"
+  },
+  {
+    "id": "T013",
+    "title": "Community Participation and Volunteer Activities",
+    "description": "Engaging in community activities — neighbourhood initiatives, volunteer work, local groups — creates a sense of purpose and external structure that can interrupt the inward pull of low mood. Contributing to something larger than oneself is consistently associated with improved wellbeing in psychoeducational literature. Even small, regular commitments help rebuild a sense of agency and connection.",
+    "evidence_category": "behavioral activation",
+    "tier": ["safe", "elevated"],
+    "source": "NIMH — https://www.nimh.nih.gov/health/topics/depression"
+  },
+  {
+    "id": "T014",
+    "title": "Traditional and Cultural Healing Practices",
+    "description": "Turning to traditional or cultural healing practices is a meaningful and legitimate first step that many people take when they are struggling, and that choice deserves respect. These practices can provide comfort, ritual, and a sense of being supported within one's own cultural framework. Evidence-based approaches are not a replacement for what you already find meaningful — they are a complement, available alongside whatever support already feels right for you.",
+    "evidence_category": "behavioral activation",
+    "tier": ["safe"],
+    "source": "Springer — https://link.springer.com/article/10.1186/1471-244X-11-138"
   }
 ]
