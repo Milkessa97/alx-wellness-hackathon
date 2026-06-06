@@ -309,15 +309,15 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
 
           {/* CTA */}
           <Button
-            variant="primary"
-            fullWidth
-            size="lg"
-            loading={loading}
-            onClick={handleUpgrade}
-            className="!bg-ivory-50 !text-ink hover:!bg-ivory-200 !border-transparent"
-          >
-            {loading ? 'Redirecting...' : 'Start free trial →'}
-          </Button>
+  variant="primary"
+  fullWidth
+  size="lg"
+  loading={loading}
+  onClick={handleUpgrade}
+  className="!bg-sage-600 !text-ivory-50 hover:!bg-sage-800 !border-transparent"
+>
+  {loading ? 'Redirecting...' : 'Start free trial →'}
+</Button>
         </motion.div>
       </motion.div>
 

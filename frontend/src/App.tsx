@@ -1,5 +1,8 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+
 import { RootLayout } from './app/layout';
 import { HomePage } from './app/page';
 import { AssessmentPage } from './app/assessment/page';
@@ -9,83 +12,106 @@ import { DashboardPage } from './app/dashboard/page';
 import { HistoryPage } from './app/history/page';
 import { BookReferralPage } from './app/book/page';
 import { PricingPage } from './app/pricing/page';
+import { BusinessPricingPage } from './app/forbusiness/page';
+import MoodPage from './app/mood/page';
+
 import { loadAnalytics } from './lib/analytics';
 import { AssessmentRecord } from './types';
 
-type AppView = 'home' | 'assessment' | 'results' | 'dashboard' | 'history' | 'book' | 'pricing' | 'notfound';
+type AppView =
+  | 'home'
+  | 'assessment'
+  | 'results'
+  | 'dashboard'
+  | 'history'
+  | 'book'
+  | 'pricing'
+  | 'forbusiness'
+  | 'notfound';
+
+const PATH_MAP: Record<AppView, string> = {
+  home: '/',
+  assessment: '/assessment',
+  results: '/results',
+  dashboard: '/dashboard',
+  history: '/history',
+  book: '/book',
+  pricing: '/pricing',
+  forbusiness: '/forbusiness',
+  notfound: '/notfound',
+};
+
+const VIEW_MAP: Record<string, AppView> = {
+  '/': 'home',
+  '/assessment': 'assessment',
+  '/results': 'results',
+  '/dashboard': 'dashboard',
+  '/history': 'history',
+  '/book': 'book',
+  '/pricing': 'pricing',
+  '/forbusiness': 'forbusiness',
+  '/notfound': 'notfound',
+};
 
 export default function App() {
   const { status } = useSession();
+
   const [currentView, setCurrentView] = useState<AppView>('home');
-  const [assessmentResult, setAssessmentResult] = useState<AssessmentRecord | null>(null);
+  const [assessmentResult, setAssessmentResult] =
+    useState<AssessmentRecord | null>(null);
   const [history, setHistory] = useState<AssessmentRecord[]>([]);
 
-  // Synchronize state with URL pathname updates (pushState & popstate)
+  // URL -> View
   useEffect(() => {
-    const handleUrlSync = () => {
-      if (typeof window === 'undefined') return;
-      const path = window.location.pathname;
-      if (path === '/' || path === '') {
-        setCurrentView('home');
-      } else if (path === '/assessment') {
-        setCurrentView('assessment');
-      } else if (path === '/results') {
-        setCurrentView('results');
-      } else if (path === '/dashboard') {
-        setCurrentView('dashboard');
-      } else if (path === '/history') {
-        setCurrentView('history');
-      } else if (path === '/book') {
-        setCurrentView('book');
-      } else if (path === '/pricing') {
-        setCurrentView('pricing');
-      } else {
-        setCurrentView('notfound');
-      }
+    const syncFromUrl = () => {
+      const pathname = window.location.pathname;
+      // /mood is a standalone, pre-router page (see render bypass below) — never
+      // map it to a view, or its ?token= query would be lost on the next effect.
+      if (pathname === '/mood') return;
+      setCurrentView(VIEW_MAP[pathname] ?? 'notfound');
     };
 
-    window.addEventListener('popstate', handleUrlSync);
-    window.addEventListener('navigationchange', handleUrlSync);
-    
-    // Initial sync
-    handleUrlSync();
+    window.addEventListener('popstate', syncFromUrl);
+    window.addEventListener('navigationchange', syncFromUrl);
+
+    syncFromUrl();
 
     return () => {
-      window.removeEventListener('popstate', handleUrlSync);
-      window.removeEventListener('navigationchange', handleUrlSync);
+      window.removeEventListener('popstate', syncFromUrl);
+      window.removeEventListener('navigationchange', syncFromUrl);
     };
   }, []);
 
-  // Update URL to match currentView state
+  // View -> URL
   useEffect(() => {
-    let targetPath = '/';
-    if (currentView === 'assessment') targetPath = '/assessment';
-    else if (currentView === 'results') targetPath = '/results';
-    else if (currentView === 'dashboard') targetPath = '/dashboard';
-    else if (currentView === 'history') targetPath = '/history';
-    else if (currentView === 'book') targetPath = '/book';
-    else if (currentView === 'pricing') targetPath = '/pricing';
-    else if (currentView === 'notfound') targetPath = '/notfound';
+    // Don't rewrite the URL while the standalone /mood page is showing.
+    if (window.location.pathname === '/mood') return;
+
+    const targetPath = PATH_MAP[currentView];
 
     if (window.location.pathname !== targetPath) {
       window.history.pushState({}, '', targetPath);
-      window.dispatchEvent(new Event('navigationchange'));
     }
   }, [currentView]);
 
-  // Load history on initial mount
   useEffect(() => {
     setHistory(loadAnalytics().history);
   }, []);
 
-  // Update history list from localStorage when view changes
   const refreshHistory = () => {
     setHistory(loadAnalytics().history);
   };
 
+  const navigateTo = (path: string) => {
+    const view = VIEW_MAP[path] ?? 'notfound';
+
+    window.history.pushState({}, '', path);
+    setCurrentView(view);
+  };
+
   const handleStartAssessment = () => {
-    setCurrentView('assessment');
     setAssessmentResult(null);
+    setCurrentView('assessment');
   };
 
   const handleAssessmentComplete = (result: AssessmentRecord) => {
@@ -96,22 +122,26 @@ export default function App() {
 
   const handleNavigateHome = () => {
     refreshHistory();
-    if (status === 'authenticated') {
-      setCurrentView('');
-    } else {
-      setCurrentView('home');
-    }
     setAssessmentResult(null);
+
+    setCurrentView('home');
   };
 
   const handleNavigateToHistory = () => {
     refreshHistory();
-    if (status === 'authenticated') {
-      setCurrentView('history');
-    } else {
-      setCurrentView('home');
-    }
+
+    setCurrentView(
+      status === 'authenticated'
+        ? 'history'
+        : 'home'
+    );
   };
+
+  // Standalone email-link page: render outside RootLayout and the VIEW_MAP
+  // router. App stays mounted so the page's navigationchange back-links work.
+  if (window.location.pathname === '/mood') {
+    return <MoodPage />;
+  }
 
   return (
     <RootLayout
@@ -142,19 +172,19 @@ export default function App() {
       )}
 
       {currentView === 'dashboard' && (
-        <DashboardPage onStartAssessment={handleStartAssessment} />
+        <DashboardPage
+          onStartAssessment={handleStartAssessment}
+        />
       )}
 
-      {currentView === 'history' && (
-        <HistoryPage />
-      )}
+      {currentView === 'history' && <HistoryPage />}
 
-      {currentView === 'book' && (
-        <BookReferralPage />
-      )}
+      {currentView === 'book' && <BookReferralPage />}
 
-      {currentView === 'pricing' && (
-        <PricingPage />
+      {currentView === 'pricing' && <PricingPage />}
+
+      {currentView === 'forbusiness' && (
+        <BusinessPricingPage onNavigate={navigateTo} />
       )}
 
       {currentView === 'notfound' && (

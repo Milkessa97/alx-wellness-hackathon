@@ -59,6 +59,18 @@ export function RootLayout({ children, onNavigateHome, onNavigateToHistory }: Ro
       callbackUrl: '/',
     });
   };
+
+  // Shared styling for the text nav links: neutral by default, sage + underlined
+  // when that link's route is the active one.
+  const navLinkClass = (isActive: boolean) =>
+    [
+      'relative text-xs font-semibold py-1.5 cursor-pointer transition-all',
+      'after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-sage-600 after:transition-transform',
+      isActive
+        ? 'text-sage-600 after:scale-x-100'
+        : 'text-ink-muted hover:text-ink after:scale-x-0 hover:after:scale-x-100',
+    ].join(' ');
+
   return (
     <div className="min-h-screen bg-ivory-100 text-ink flex flex-col font-body transition-colors duration-300 selection:bg-amber-200">
       {/* Header navbar - Fixed top bar */}
@@ -77,20 +89,20 @@ export function RootLayout({ children, onNavigateHome, onNavigateToHistory }: Ro
           </button>
 
           {/* Right: UserMenu (automatically renders login button if not authenticated) */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-6">
   <button
     onClick={() => {
       window.history.pushState({}, '', '/assessment');
       window.dispatchEvent(new Event('navigationchange'));
     }}
-    className="text-xs font-bold text-sage-600 hover:text-sage-700 transition-colors cursor-pointer"
+    className={navLinkClass(pathname === '/assessment')}
   >
     New Check-in
   </button>
 
   <button
     onClick={onNavigateToHistory}
-    className="text-xs font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer"
+    className={navLinkClass(pathname === '/history')}
   >
     Trends & History
   </button>
@@ -100,9 +112,21 @@ export function RootLayout({ children, onNavigateHome, onNavigateToHistory }: Ro
       window.history.pushState({}, '', '/pricing');
       window.dispatchEvent(new Event('navigationchange'));
     }}
-    className="text-xs font-semibold text-ink-muted hover:text-ink transition-colors cursor-pointer"
+    className={`text-xs font-semibold px-4 py-1.5 rounded-full bg-sage-600 text-white hover:opacity-90 transition-opacity cursor-pointer ${
+      pathname === '/pricing' ? 'ring-2 ring-sage-400 ring-offset-1 ring-offset-ivory-50' : ''
+    }`}
   >
-    Pricing
+    Go Premium
+  </button>
+
+  <button
+    onClick={() => {
+      window.history.pushState({}, '', '/forbusiness');
+      window.dispatchEvent(new Event('navigationchange'));
+    }}
+    className={navLinkClass(pathname === '/forbusiness')}
+  >
+    For Business
   </button>
 
   {status === 'authenticated' && (

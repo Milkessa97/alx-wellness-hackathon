@@ -9,7 +9,7 @@ from corpus_loader import load_and_validate_corpus
 from database import test_connection, get_user_assessments
 from auth import get_optional_user
 from gating import check_assessment_gate
-from routers import assess, history, trend, referral, auth_router, stripe_router
+from routers import assess, history, trend, referral, auth_router, stripe_router, mood, action_plan, jobs
 import asyncio
 from functools import partial
 # ── Logging setup ─────────────────────────────────────────
@@ -68,7 +68,7 @@ app.add_middleware(
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_headers=["Content-Type", "Authorization", "X-Internal-Key"],
 )
 
 # Include Routers (each router already namespaces its paths under /api)
@@ -78,6 +78,9 @@ app.include_router(history.router)
 app.include_router(trend.router)
 app.include_router(referral.router)
 app.include_router(stripe_router.router, prefix="/api")
+app.include_router(mood.router,          prefix="/api", tags=["mood"])
+app.include_router(action_plan.router,   prefix="/api", tags=["action-plan"])
+app.include_router(jobs.router,          prefix="/api", tags=["jobs"])
 
 
 # ── Endpoints ─────────────────────────────────────────────

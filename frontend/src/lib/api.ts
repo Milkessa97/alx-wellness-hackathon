@@ -6,7 +6,7 @@ import {
   HistoryResponse, 
   GateStatus 
 } from '../types';
-import { Session } from './auth';
+import { Session, getSession } from './auth';
 
 const API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
 
@@ -23,6 +23,50 @@ export class APIError extends Error {
     super(message);
     this.name = 'APIError';
   }
+}
+
+// Thin authenticated fetch wrapper. Resolves the current session, attaches the
+// app JWT as a Bearer token, prefixes the API base URL, and throws an APIError
+// on any non-ok response. Returns the parsed JSON body (or undefined for 204).
+//
+// Note: in this Vite SPA the bearer token is the backend-minted app JWT
+// (`session.token`), obtained via the Google sign-in exchange — there is no
+// NextAuth `accessToken`/`idToken` on the session.
+export async function apiFetch<T = any>(
+  path: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const session = await getSession();
+
+  const headers = new Headers(options.headers);
+  if (!headers.has('Content-Type') && options.body) {
+    headers.set('Content-Type', 'application/json');
+  }
+  if (session?.token) {
+    headers.set('Authorization', `Bearer ${session.token}`);
+  }
+
+  const url = path.startsWith('http')
+    ? path
+    : `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+
+  const response = await fetch(url, { ...options, headers });
+
+  if (!response.ok) {
+    let message = `Request failed with status ${response.status}`;
+    try {
+      const data = await response.clone().json();
+      message = data?.detail || data?.message || message;
+    } catch {
+      /* body was not JSON — keep the default message */
+    }
+    throw new APIError(response.status, message);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+  return response.json() as Promise<T>;
 }
 
 export async function submitAssessment(answers: number[], token:string): Promise<AssessmentResponse> {

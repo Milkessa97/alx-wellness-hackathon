@@ -130,7 +130,7 @@ export function QuestionCard({
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 gap-4"
+        className="grid grid-cols-1 gap-2"
       >
         {ANSWER_OPTIONS.map((option, index) => {
           const isSelected = selectedScore === option.value;

@@ -58,7 +58,12 @@ const GOOGLE_CLIENT_ID: string =
 type SessionListener = (s: Session | null) => void;
 const listeners = new Set<SessionListener>();
 
+// Module-level source of truth for the current session, so non-React callers
+// (e.g. `getSession()` used by the API wrapper) can read it without a hook.
+let currentSession: Session | null = null;
+
 function persistAndBroadcast(session: Session | null) {
+  currentSession = session;
   try {
     if (session) {
       localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(session));
@@ -282,6 +287,19 @@ export function useSession() {
   };
 }
 
+// NextAuth-compatible, non-hook session accessor. Returns the current session
+// (or null) without requiring React context — usable from plain modules such as
+// the `apiFetch` wrapper. Falls back to the persisted session on cold start
+// (e.g. first call after a full page reload, before SessionProvider mounts).
+export async function getSession(): Promise<Session | null> {
+  if (currentSession) {
+    return isExpired(currentSession) ? null : currentSession;
+  }
+  const stored = loadStoredSession();
+  currentSession = stored;
+  return stored;
+}
+
 // Programmatic sign-in: triggers the Google One Tap / prompt flow.
 // For a guaranteed-clickable entry point, prefer `renderGoogleButton`.
 export async function signIn(
@@ -340,6 +358,7 @@ export function NextAuth(_options?: any): any {
 }
 
 NextAuth.useSession = useSession;
+NextAuth.getSession = getSession;
 NextAuth.signIn = signIn;
 NextAuth.signOut = signOut;
 NextAuth.SessionProvider = SessionProvider;

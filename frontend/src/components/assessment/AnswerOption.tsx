@@ -37,7 +37,7 @@ export function AnswerOption({ option, isSelected, onSelect }: AnswerOptionProps
         ease: 'easeInOut',
       }}
       className={clsx(
-        "w-full text-left p-5 rounded-xl border flex items-center justify-between gap-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sage-500 select-none transition-shadow",
+        "w-full text-left p-3 rounded-xl border flex items-center justify-between gap-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sage-500 select-none transition-shadow",
         isSelected 
           ? "text-white shadow-warm-md" 
           : "hover:bg-ivory-200 hover:shadow-warm-sm text-ink-DEFAULT"
