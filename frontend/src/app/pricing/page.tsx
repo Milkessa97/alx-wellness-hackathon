@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Check, X, Shield, Lock, RefreshCw, Loader2 } from 'lucide-react';
+import { Check, X, Shield, Lock, RefreshCw, Loader2, Copy } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 
 const API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
@@ -13,7 +13,7 @@ const PRICE_ANNUAL = (import.meta as any).env?.VITE_STRIPE_PRICE_ANNUAL || 'pric
 
 // ── Feature list data ────────────────────────────────────────────────────
 const freeFeatures = [
-  'PHQ-9 assessment every 14 days',
+  'PHQ-9 assessment',
   'AI-generated reflection',
   'Crisis resources always available',
   'Last 3 check-ins visible',
@@ -28,11 +28,15 @@ const premiumOnlyFeatures = [
 ];
 
 const allPremiumFeatures = [
-  'Everything in Free',
+  'PHQ-9 assessment',
+  'AI-generated reflection',
+  'Crisis resources always available',
+  'All check-in history visible',
+  'Basic encouragement notes',
+  'Clinic referral booking',
   'Full history & trend analytics',
   'Personalized Coping task Generation',
   'Daily reminders',
-  'Priority clinic matching',
 ];
 
 // ── Trust row items ──────────────────────────────────────────────────────
@@ -41,6 +45,47 @@ const trustItems = [
   { icon: Lock,   text: 'Secured by Stripe — we never see your card' },
   { icon: RefreshCw, text: 'Downgrade instantly from your profile' },
 ];
+
+// ── Stripe test cards (test-mode only) ───────────────────────────────────
+// Hardcoded reference cards surfaced in the pre-checkout modal so testers can
+// copy a number and exercise each Stripe scenario.
+const STRIPE_TEST_CARDS = [
+  {
+    id: 'success',
+    label: 'Successful Payment',
+    number: '4242 4242 4242 4242',
+    extra: 'Any valid future date / Any CVC',
+    tone: 'success' as const,
+  },
+  {
+    id: 'insufficient',
+    label: 'Declined (Insufficient Funds)',
+    number: '4510 0000 0000 0000',
+    extra: 'Any valid future date / Any CVC',
+    tone: 'danger' as const,
+  },
+  {
+    id: 'stolen',
+    label: 'Declined (Stolen Card)',
+    number: '4510 1111 1111 1111',
+    extra: 'Any valid future date / Any CVC',
+    tone: 'danger' as const,
+  },
+  {
+    id: 'sca',
+    label: 'Trigger 3D Secure (SCA)',
+    number: '4000 0000 0000 0002',
+    extra: 'Any valid future date / Any CVC',
+    tone: 'warning' as const,
+  },
+];
+
+// Per-tone label colors for the scenario badge in the modal.
+const toneClasses: Record<'success' | 'danger' | 'warning', string> = {
+  success: 'bg-sage-100 text-sage-700 border-sage-200',
+  danger: 'bg-rose-100 text-rose-700 border-rose-200',
+  warning: 'bg-amber-100 text-amber-700 border-amber-200',
+};
 
 // ── Stagger animation variants ──────────────────────────────────────────
 const containerVariants = {
@@ -68,6 +113,20 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
   const { data: session, status } = useSession();
   const [isAnnual, setIsAnnual] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Tracks which card's number was just copied, to show transient "Copied!" feedback.
+  const [copiedCard, setCopiedCard] = useState<string | null>(null);
+
+  const handleCopy = async (id: string, number: string) => {
+    try {
+      // Copy digits-only so it pastes cleanly into Stripe's card field.
+      await navigator.clipboard.writeText(number.replace(/\s/g, ''));
+      setCopiedCard(id);
+      setTimeout(() => setCopiedCard((curr: string | null) => (curr === id ? null : curr)), 1500);
+    } catch (err) {
+      console.error('Clipboard copy failed:', err);
+    }
+  };
 
   const isSignedIn = status === 'authenticated';
   // We don't have tier info in the session object directly, so we treat
@@ -205,7 +264,7 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
           <div className="border-t border-ivory-200 my-4" />
 
           {/* Included features */}
-          <ul className="space-y-2.5 mb-4 flex-grow">
+          <ul className="space-y-2.5 flex-grow">
             {freeFeatures.map((feature) => (
               <li key={feature} className="flex items-start gap-2.5 text-sm text-ink-soft">
                 <Check className="w-4 h-4 text-sage-600 mt-0.5 shrink-0" />
@@ -287,11 +346,11 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
             </AnimatePresence>
           </div>
 
-          <p className="text-sage-400 text-xs mb-4">
+          <p className="text-sage-400 text-xs">
             14-day free trial
           </p>
 
-          <div className="border-t border-ivory-50/10 my-4" />
+          <div className="border-t border-ivory-50/10 my-2" />
 
           {/* All features */}
           <ul className="space-y-2.5 mb-6 flex-grow">
@@ -308,11 +367,10 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
   variant="primary"
   fullWidth
   size="lg"
-  loading={loading}
-  onClick={handleUpgrade}
+  onClick={() => setIsModalOpen(true)}
   className="!bg-sage-600 !text-ivory-50 hover:!bg-sage-800 !border-transparent"
 >
-  {loading ? 'Redirecting...' : 'Start free trial →'}
+  Start free trial →
 </Button>
         </motion.div>
       </motion.div>
@@ -342,6 +400,120 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
           </div>
         ))}
       </motion.div>
+
+      {/* ── Stripe test-card modal ──────────────────────────────────────── */}
+      <AnimatePresence>
+      {isModalOpen && (
+        <motion.div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+            onClick={() => !loading && setIsModalOpen(false)}
+          />
+
+          {/* Modal panel */}
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            className="relative w-full max-w-lg bg-white rounded-2xl shadow-warm-lg border border-ivory-300 max-h-[90vh] overflow-y-auto"
+            initial={{ opacity: 0, scale: 0.95, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 12 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 26 }}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-4 border-b border-ivory-200">
+              <div>
+                <h3 className="font-display text-lg font-bold text-ink">
+                  Test mode — use a Stripe test card
+                </h3>
+                <p className="text-xs text-ink-muted mt-1">
+                  No real charges. Copy a card number below to try each scenario at checkout.
+                </p>
+              </div>
+              <button
+                onClick={() => !loading && setIsModalOpen(false)}
+                aria-label="Close"
+                className="shrink-0 p-1.5 rounded-lg text-ink-light hover:text-ink hover:bg-ivory-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Test card list */}
+            <div className="px-6 py-4 space-y-3">
+              {STRIPE_TEST_CARDS.map((card) => (
+                <div
+                  key={card.id}
+                  className="rounded-xl border border-ivory-300 bg-ivory-50/60 p-3.5"
+                >
+                  <span
+                    className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full border mb-2 ${toneClasses[card.tone]}`}
+                  >
+                    {card.label}
+                  </span>
+
+                  <div className="flex items-center justify-between gap-3">
+                    <code className="font-mono text-sm md:text-base font-semibold text-ink tracking-wide tabular-nums">
+                      {card.number}
+                    </code>
+                    <button
+                      onClick={() => handleCopy(card.id, card.number)}
+                      className={`shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-colors cursor-pointer ${
+                        copiedCard === card.id
+                          ? 'bg-sage-100 text-sage-700 border-sage-200'
+                          : 'bg-white text-ink-soft border-ivory-300 hover:bg-ivory-100 hover:text-ink'
+                      }`}
+                    >
+                      {copiedCard === card.id ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" />
+                          Copy
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-ink-muted mt-1.5">{card.extra}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer CTAs */}
+            <div className="px-6 pb-6 pt-2 flex flex-col-reverse sm:flex-row gap-3 sm:justify-end border-t border-ivory-200 mt-1">
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => setIsModalOpen(false)}
+                disabled={loading}
+              >
+                Go back
+              </Button>
+              <Button
+                variant="primary"
+                size="lg"
+                loading={loading}
+                onClick={handleUpgrade}
+                className="!bg-sage-600 !text-ivory-50 hover:!bg-sage-800 !border-transparent"
+              >
+                {loading ? 'Redirecting...' : 'Proceed to Checkout & Start Trial'}
+              </Button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
     </motion.div>
   );
 }
