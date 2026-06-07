@@ -10,10 +10,10 @@ import { UserMenu } from '../components/auth/UserMenu';
 import { signOut } from 'next-auth/react';
 
 export const metadata = {
-  title: "Reflect — Wellness Self-Check",
+  title: "MAEDOT — Wellness Self-Check",
   description: "A private psychoeducational self-reflection tool",
   icons: {
-    icon: '❤️',
+    icon: "/favicon.png",
   },
 };
 

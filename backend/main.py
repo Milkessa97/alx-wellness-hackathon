@@ -3,13 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Optional
+import os
 import logging
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+
 from corpus_loader import load_and_validate_corpus
-from database import test_connection, get_user_assessments
+from database import test_connection, get_user_assessments, get_supabase
 from auth import get_optional_user
 from gating import check_assessment_gate
 from routers import assess, history, trend, referral, auth_router, stripe_router, mood, action_plan, jobs
+from routers.jobs import run_daily_email_batch
 import asyncio
 from functools import partial
 # ── Logging setup ─────────────────────────────────────────
@@ -41,7 +46,42 @@ async def lifespan(app: FastAPI):
         logger.warning("Supabase connection failed — authenticated features unavailable")
     # Do NOT raise — app should still work for anonymous users if DB is down
 
+    # ── Daily wellness email scheduler ─────────────────────────
+    # In-process cron that emails every premium user once a day. It lives inside
+    # the API process, so it requires an always-on host (Render/Railway/VPS) —
+    # NOT serverless. Fire time is configurable via DAILY_EMAIL_HOUR/MINUTE (UTC,
+    # defaults to 08:00). The /api/jobs/daily-email endpoint remains available
+    # for manual or external-cron triggering of the same batch.
+    scheduler = AsyncIOScheduler(timezone="UTC")
+
+    async def _run_daily_emails():
+        try:
+            result = await run_daily_email_batch(get_supabase())
+            logger.info(f"Scheduled daily email batch complete: {result}")
+        except Exception as e:
+            logger.error(f"Scheduled daily email batch crashed: {e}")
+
+    email_hour = int(os.getenv("DAILY_EMAIL_HOUR", "8"))
+    email_minute = int(os.getenv("DAILY_EMAIL_MINUTE", "0"))
+    scheduler.add_job(
+        _run_daily_emails,
+        # Pin UTC on the trigger itself — a pre-built CronTrigger captures the
+        # server's *local* zone otherwise, so the fire time would drift with the
+        # deploy host instead of matching the "UTC" we log below.
+        CronTrigger(hour=email_hour, minute=email_minute, timezone="UTC"),
+        id="daily_wellness_email",
+        replace_existing=True,
+        misfire_grace_time=3600,  # still fire if the process was briefly down
+    )
+    scheduler.start()
+    app.state.scheduler = scheduler
+    logger.info(
+        f"Daily email scheduler started — fires {email_hour:02d}:{email_minute:02d} UTC daily."
+    )
+
     yield
+
+    scheduler.shutdown(wait=False)
     logger.info("Shutting down.")
 
 

@@ -163,7 +163,7 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
         },
         body: JSON.stringify({
           price_id: selectedPriceId,
-          success_url: `${APP_URL}/dashboard?upgraded=true`,
+          success_url: `${APP_URL}/`,
           cancel_url: `${APP_URL}/pricing`,
         }),
       });

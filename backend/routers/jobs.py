@@ -18,29 +18,26 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
 
-@router.post("/daily-email")
-async def daily_email_job(
-    x_internal_key: str = Header(alias="X-Internal-Key"),
-    db=Depends(get_supabase),
-):
+async def run_daily_email_batch(db) -> dict:
     """
-    Cron-triggered endpoint that:
-      1. Validates the internal API key.
-      2. Fetches all premium users (not soft-deleted).
-      3. For each user — generates an action plan, creates a mood token,
-         and sends the daily wellness email.
-      4. Collects per-user errors so one failure never blocks the batch.
+    Send the daily wellness email to every premium (non-soft-deleted) user.
+
+    This is the single source of truth for the batch, shared by the
+    cron-triggered endpoint below and the in-process APScheduler job in
+    main.py — so the manual and scheduled paths can never drift apart. For
+    each user it generates an action plan, creates a 24h mood token, and sends
+    the email. Per-user errors are collected so one failure never blocks the
+    rest of the batch.
+
+    Args:
+        db: A Supabase client (from get_supabase()).
 
     Returns:
-        {"sent": int, "errors": [str]}
-    """
-    # ── Auth guard ────────────────────────────────────────────────────
-    if not INTERNAL_API_KEY or x_internal_key != INTERNAL_API_KEY:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid internal API key",
-        )
+        {"sent": int, "errors": [user_id, ...]}
 
+    Raises:
+        RuntimeError: if the premium-user fetch itself fails.
+    """
     # ── Fetch premium users ──────────────────────────────────────────
     try:
         res = (
@@ -53,10 +50,7 @@ async def daily_email_job(
         users = res.data or []
     except Exception as e:
         logger.error(f"Failed to fetch premium users: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch premium users",
-        )
+        raise RuntimeError("Failed to fetch premium users") from e
 
     sent_count = 0
     failed_user_ids: list[str] = []
@@ -92,4 +86,36 @@ async def daily_email_job(
             logger.error(f"Daily email failed for user {user_id}: {e}")
             failed_user_ids.append(user_id)
 
+    logger.info(
+        f"Daily email batch: {sent_count} sent, {len(failed_user_ids)} failed "
+        f"out of {len(users)} premium users"
+    )
     return {"sent": sent_count, "errors": failed_user_ids}
+
+
+@router.post("/daily-email")
+async def daily_email_job(
+    x_internal_key: str = Header(alias="X-Internal-Key"),
+    db=Depends(get_supabase),
+):
+    """
+    Cron-triggered endpoint that validates the internal API key, then runs the
+    daily email batch for all premium users (see run_daily_email_batch).
+
+    Returns:
+        {"sent": int, "errors": [str]}
+    """
+    # ── Auth guard ────────────────────────────────────────────────────
+    if not INTERNAL_API_KEY or x_internal_key != INTERNAL_API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid internal API key",
+        )
+
+    try:
+        return await run_daily_email_batch(db)
+    except RuntimeError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch premium users",
+        )
