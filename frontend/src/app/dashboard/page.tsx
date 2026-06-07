@@ -230,7 +230,7 @@ export function DashboardPage({ onStartAssessment }: DashboardPageProps) {
               </div>
               <button
                 onClick={handleStartCheckIn}
-                className="self-start bg-sage-500 hover:bg-sage-600 text-white font-bold text-xs py-3 px-5 rounded-2xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                className="self-start bg-sage-600 hover:bg-sage-700 text-white font-bold text-xs py-3 px-5 rounded-2xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
               >
                 <HeartPulse className="w-3.5 h-3.5" />
                 Begin Check-in →
@@ -275,7 +275,7 @@ export function DashboardPage({ onStartAssessment }: DashboardPageProps) {
               >
                 <button
                   onClick={() => navigateTo('/pricing')}
-                  className="flex items-center gap-2 text-xs font-semibold bg-sage-500 hover:bg-sage-600 text-white px-3 py-1.5 rounded-xl transition-colors cursor-pointer text-left"
+                  className="flex items-center gap-2 text-xs font-semibold text-amber-700 hover:text-amber-800 transition-colors cursor-pointer text-left"
                 >
                   <Sparkles className="w-4 h-4 shrink-0" />
                   Unlock your full history and trend charts with Premium →
@@ -367,7 +367,7 @@ export function DashboardPage({ onStartAssessment }: DashboardPageProps) {
               <div className="mt-4 pt-3 border-t border-ivory-100/60 text-right">
                 <button
                   onClick={() => navigateTo('/history')}
-                  className="text-xs font-bold font-mono bg-sage-500 hover:bg-sage-600 text-white px-3 py-1.5 rounded-xl transition-colors cursor-pointer"
+                  className="text-xs font-bold font-mono text-sage-600 hover:text-sage-700 hover:underline transition-colors cursor-pointer"
                 >
                   View full history →
                 </button>

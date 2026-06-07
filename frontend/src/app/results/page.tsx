@@ -6,7 +6,10 @@ import ElevatedResult from '../../components/results/ElevatedResult';
 import CrisisResult from '../../components/results/CrisisResult';
 import Button from '../../components/ui/Button';
 import { PremiumGate } from '../../components/ui/PremiumGate';
-import { RefreshCw, Home, Calendar, ArrowRight } from 'lucide-react';
+import { ScoreHistoryChart } from '../../components/analytics/ScoreHistoryChart';
+import { TierDistributionChart } from '../../components/analytics/TierDistributionChart';
+import { loadAnalytics } from '../../lib/analytics';
+import { RefreshCw, Home, Calendar, ArrowRight, BarChart3 } from 'lucide-react';
 
 export function fetchClinicalRecommendations(score: number): Recommendation[] {
   if (score >= 20) {
@@ -109,6 +112,7 @@ export function ResultsPage({ latestResult, onRetake, onNavigateHome }: ResultsP
   const [isLoading, setIsLoading] = useState(true);
   const [trend, setTrend] = useState<{ trend: string; delta: number | null; message: string } | null>(null);
   const [milestones, setMilestones] = useState<{ id: string; message: string }[] | null>(null);
+  const [history, setHistory] = useState<AssessmentRecord[]>([]);
 
   useEffect(() => {
     const rawResultString = sessionStorage.getItem('phq9_result');
@@ -155,6 +159,14 @@ export function ResultsPage({ latestResult, onRetake, onNavigateHome }: ResultsP
       setIsLoading(false);
     }
   }, [latestResult, onRetake]);
+
+  // Load analytics history for the trend charts
+  useEffect(() => {
+    const data = loadAnalytics();
+    if (data && data.history) {
+      setHistory(data.history);
+    }
+  }, []);
 
   // ── Loading state ──────────────────────────────────────
   if (isLoading || !result) {
@@ -300,13 +312,36 @@ export function ResultsPage({ latestResult, onRetake, onNavigateHome }: ResultsP
                 </PremiumGate>
               )}
 
+              {/* ── Trend Analytics ─── stacked vertically ── */}
+              {!isCrisis && history && history.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className="space-y-4"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="p-1.5 bg-sage-100 rounded-lg">
+                      <BarChart3 className="w-4 h-4 text-sage-600" />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-ink-muted uppercase">
+                      Trend Analytics
+                    </span>
+                  </div>
+                  <div className="space-y-4">
+                    <ScoreHistoryChart history={history} />
+                    <TierDistributionChart latestResult={result} />
+                  </div>
+                </motion.div>
+              )}
+
               {/* Action buttons */}
               <div className="flex flex-wrap gap-3 pt-2">
                 {isCrisis ? (
                   <Button
                     variant="primary"
                     onClick={onNavigateHome}
-                    className="gap-2 bg-sage-500 hover:bg-sage-600 text-white text-sm rounded-xl px-6 py-3"
+                    className="gap-2 bg-sage-600 hover:bg-sage-700 text-white text-sm rounded-xl px-6 py-3"
                   >
                     <Home className="w-4 h-4" /> Return home
                   </Button>
@@ -322,21 +357,21 @@ export function ResultsPage({ latestResult, onRetake, onNavigateHome }: ResultsP
                         window.history.pushState({}, '', '/book');
                         window.dispatchEvent(new Event('navigationchange'));
                       }}
-                      className="gap-2 bg-sage-500 hover:bg-sage-600 text-white text-sm rounded-xl px-6 py-3"
+                      className="gap-2 bg-sage-600 hover:bg-sage-700 text-white text-sm rounded-xl px-6 py-3"
                     >
                       <Calendar className="w-4 h-4" /> Book appointment
                     </Button>
                     <Button
-                      variant="primary"
+                      variant="ghost"
                       onClick={onRetake}
-                      className="gap-2 text-sm rounded-xl px-5 py-3 bg-sage-500 hover:bg-sage-600 text-white border-transparent"
+                      className="gap-2 text-sm rounded-xl px-5 py-3 border-ink/20"
                     >
                       <RefreshCw className="w-3.5 h-3.5" /> Retake
                     </Button>
                     <Button
-                      variant="primary"
+                      variant="ghost"
                       onClick={onNavigateHome}
-                      className="gap-2 text-sm rounded-xl px-5 py-3 bg-sage-500 hover:bg-sage-600 text-white border-transparent"
+                      className="gap-2 text-sm rounded-xl px-5 py-3 border-ink/20"
                     >
                       <Home className="w-3.5 h-3.5" /> Home
                     </Button>

@@ -74,6 +74,9 @@ async def create_checkout(
         elif body_price_id in ["annual", "price_annual"]:
             return ANNUAL_PRICE_ID
 
+        if body_price_id.startswith("price_"):
+            return body_price_id
+
         raise HTTPException(
             status_code=400,
             detail=f"Invalid plan received: {body_price_id}"
@@ -97,6 +100,8 @@ async def create_checkout(
             allow_promotion_codes=True,
         )
         return {"checkout_url": session.url}
+    except HTTPException:
+        raise
     except stripe.error.StripeError as e:
         logger.error(f"Stripe error creating checkout session: {e}")
         raise HTTPException(
@@ -269,7 +274,7 @@ async def subscription_status(current_user: dict = Depends(get_current_user)):
 @router.post("/stripe/cancel")
 async def cancel_subscription(current_user: dict = Depends(get_current_user)):
     """
-    Cancels the subscription at period end.
+    Cancels the subscription at period end, or deletes it immediately if it's a trial.
     """
     subscription_id = current_user.get("subscription_id")
 
@@ -279,17 +284,39 @@ async def cancel_subscription(current_user: dict = Depends(get_current_user)):
             detail="No active subscription found."
         )
 
+    # Detect if user is currently on a trial
+    trial_ends_at = current_user.get("trial_ends_at")
+    is_trial = False
+    if trial_ends_at:
+        try:
+            trial_ends_dt = datetime.fromisoformat(trial_ends_at)
+            is_trial = trial_ends_dt > datetime.now(timezone.utc)
+        except Exception:
+            is_trial = False
+
     try:
-        stripe.Subscription.modify(subscription_id, cancel_at_period_end=True)
-        return {"message": "Your subscription will end at the current billing period."}
+        if is_trial:
+            # Delete subscription immediately to end trial
+            stripe.Subscription.delete(subscription_id)
+            # Update user tier to free immediately in the database
+            supabase = get_supabase()
+            supabase.table("users").update({
+                "tier": "free",
+                "subscription_id": None
+            }).eq("id", current_user.get("id")).execute()
+            return {"message": "Your premium trial has been dismissed."}
+        else:
+            # Modify to cancel at period end for paid subscriptions
+            stripe.Subscription.modify(subscription_id, cancel_at_period_end=True)
+            return {"message": "Your subscription will end at the current billing period."}
     except stripe.error.StripeError as e:
-        logger.error(f"Stripe error modifying subscription {subscription_id}: {e}")
+        logger.error(f"Stripe error modifying/deleting subscription {subscription_id}: {e}")
         raise HTTPException(
             status_code=fastapi_status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
     except Exception as e:
-        logger.error(f"Unexpected error modifying subscription {subscription_id}: {e}")
+        logger.error(f"Unexpected error modifying/deleting subscription {subscription_id}: {e}")
         raise HTTPException(
             status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to cancel subscription."

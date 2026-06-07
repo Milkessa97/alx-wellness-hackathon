@@ -88,9 +88,9 @@ export function CrisisResult({ result, recommendations }: CrisisResultProps) {
                   className="no-underline inline-block w-full md:w-auto"
                 >
                   <Button
-                    variant="primary"
+                    variant="danger"
                     size="sm"
-                    className="w-full md:w-auto px-4 py-2 flex items-center justify-center gap-1.5 font-sans font-semibold rounded-xl text-xs bg-sage-500 hover:bg-sage-600 text-white border-transparent"
+                    className="w-full md:w-auto px-4 py-2 flex items-center justify-center gap-1.5 font-sans font-semibold rounded-xl text-xs"
                   >
                     <Globe className="w-3.5 h-3.5" /> Contact now →
                   </Button>

@@ -106,6 +106,7 @@ export function PremiumGate({ children, featureName, compact = false }: PremiumG
           variant="primary"
           size="sm"
           onClick={() => navigateTo('/pricing')}
+          className="bg-sage-400 hover:bg-sage-600"
         >
           Unlock Premium →
         </Button>

@@ -251,10 +251,10 @@ export function AssessmentShell({ onComplete, onCancel }: AssessmentShellProps) 
       {/* Top nav row */}
       <div className="w-full flex justify-between items-center mb-4">
         <Button
-          variant="primary"
+          variant="ghost"
           size="sm"
           onClick={onCancel}
-          className="gap-1.5 bg-sage-500 hover:bg-sage-600 text-white font-semibold"
+          className="gap-1.5 -ml-2 text-ink-light hover:text-ink font-semibold"
         >
           Cancel
         </Button>
@@ -328,7 +328,7 @@ export function AssessmentShell({ onComplete, onCancel }: AssessmentShellProps) 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           onClick={handlePrev}
-          className="mt-3 flex items-center gap-1.5 text-xs bg-sage-500 hover:bg-sage-600 text-white px-3 py-1.5 rounded-xl transition-all font-semibold cursor-pointer"
+          className="mt-3 flex items-center gap-1 text-xs text-ink-muted hover:text-ink transition-colors font-semibold"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
           Previous question

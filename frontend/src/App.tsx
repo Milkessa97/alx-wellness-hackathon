@@ -91,6 +91,9 @@ export default function App() {
 
     if (window.location.pathname !== targetPath) {
       window.history.pushState({}, '', targetPath);
+      // Notify usePathname() so the navbar's active link stays in sync for
+      // navigations that go through setCurrentView (History, logo, results, …).
+      window.dispatchEvent(new Event('navigationchange'));
     }
   }, [currentView]);
 

@@ -64,7 +64,7 @@ export function CrisisModal({ isOpen, onClose, resources }: CrisisModalProps) {
 
         <button
           onClick={onClose}
-          className="bg-sage-500 hover:bg-sage-600 text-white text-xs font-semibold rounded-xl px-4 py-2 transition-colors cursor-pointer inline-block mt-2"
+          className="text-xs font-semibold text-ink-muted hover:text-ink transition-colors underline cursor-pointer"
         >
           Continue to my reflection
         </button>

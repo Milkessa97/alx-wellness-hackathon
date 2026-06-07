@@ -20,6 +20,8 @@ export interface User {
   image?: string;
   role?: string;
   tier?: string;
+  is_trial?: boolean;
+  subscription_id?: string;
 }
 
 export interface Session {
@@ -234,17 +236,27 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
           if (res.ok) {
             const data = await res.json();
             const tier = data.tier || 'free';
+            const is_trial = data.is_trial || false;
+            const subscription_id = data.subscription_id || null;
             localStorage.setItem('maedot_user_tier', tier);
             
             // Also update the session user tier
             setSession((prev) => {
               if (!prev) return null;
-              if (prev.user.tier === tier) return prev;
+              if (
+                prev.user.tier === tier &&
+                prev.user.is_trial === is_trial &&
+                prev.user.subscription_id === subscription_id
+              ) {
+                return prev;
+              }
               const updated = {
                 ...prev,
                 user: {
                   ...prev.user,
                   tier: tier,
+                  is_trial: is_trial,
+                  subscription_id: subscription_id,
                 },
               };
               try {

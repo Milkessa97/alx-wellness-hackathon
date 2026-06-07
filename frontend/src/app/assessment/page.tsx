@@ -127,7 +127,7 @@ export function AssessmentPage({ onComplete, onCancel }: AssessmentPageProps) {
               {/* Trust indicators */}
               <div className="flex flex-col gap-3">
                 {[
-                  { icon: Lock, text: 'Your answers are never stored — only your score and tier are saved' },
+                  { icon: Lock, text: 'Your answers never leave this device' },
                   { icon: ShieldCheck, text: 'Based on the validated PHQ-9 scale' },
                   { icon: Clock, text: 'Takes about 2 minutes to complete' },
                 ].map(({ icon: Icon, text }) => (

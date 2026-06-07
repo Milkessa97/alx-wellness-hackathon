@@ -23,19 +23,15 @@ const freeFeatures = [
 
 const premiumOnlyFeatures = [
   'Full history & trend analytics',
-  'Coping task selection',
+  'Personalized Coping task Generation',
   'Daily reminders',
-  'Streak tracking',
-  'PDF export',
 ];
 
 const allPremiumFeatures = [
   'Everything in Free',
   'Full history & trend analytics',
-  'Coping task selection',
+  'Personalized Coping task Generation',
   'Daily reminders',
-  'Streak tracking',
-  'PDF export',
   'Priority clinic matching',
 ];
 
@@ -292,7 +288,7 @@ export function PricingPage({ onNavigate }: PricingPageProps) {
           </div>
 
           <p className="text-sage-400 text-xs mb-4">
-            14-day free trial — no card required
+            14-day free trial
           </p>
 
           <div className="border-t border-ivory-50/10 my-4" />

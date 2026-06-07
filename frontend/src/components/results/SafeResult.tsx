@@ -1,11 +1,7 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { AssessmentRecord, Recommendation } from '../../types';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
-import { ScoreHistoryChart } from '../analytics/ScoreHistoryChart';
-import { TierDistributionChart } from '../analytics/TierDistributionChart';
-import { loadAnalytics } from '../../lib/analytics';
-import { ChevronDown, ChevronUp, History, Sparkles, Heart, ShieldCheck } from 'lucide-react';
+import { Sparkles, Heart, ShieldCheck } from 'lucide-react';
 import TrendCard from '../dashboard/TrendCard';
 import MilestoneToast from '../dashboard/MilestoneToast';
 
@@ -17,15 +13,6 @@ interface SafeResultProps {
 }
 
 export function SafeResult({ result, recommendations, trend, milestones }: SafeResultProps) {
-  const [history, setHistory] = useState<AssessmentRecord[]>([]);
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  useEffect(() => {
-    const data = loadAnalytics();
-    if (data && data.history) {
-      setHistory(data.history);
-    }
-  }, []);
 
   const fallbackSummary = "Your responses indicate that you are currently experiencing minimal to mild depressive symptoms. Your mood, energy levels, and overall interest in everyday activities appear well-balanced.\n\nThis is a strong baseline. To maintain this solid state, continue focusing on steady daily routines, proper sleep schedules, mindfulness practices, and regular physical activities. Tuning into your emotions through simple, safe checkpoints like these is a wonderful practice of self-care.";
   
@@ -200,43 +187,7 @@ export function SafeResult({ result, recommendations, trend, milestones }: SafeR
         </div>
       </div>
 
-      {/* Collapsible Analytics Preview Widget if history tracking exists */}
-      {history && history.length > 0 && (
-        <div className="space-y-3 pt-2">
-          <Card className="border border-ivory-200 p-5 md:p-6 bg-white rounded-2xl">
-            <button
-              type="button"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full flex justify-between items-center bg-sage-500 hover:bg-sage-600 text-white transition-colors focus:outline-none cursor-pointer px-4 py-3 rounded-xl"
-            >
-              <span className="text-sm font-sans font-bold flex items-center gap-2 uppercase tracking-wide">
-                <History className="w-4 h-4" />
-                {isExpanded ? 'Hide analytical trends' : 'View your recent check-ins'}
-              </span>
-              {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-            </button>
 
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
-                  className="overflow-hidden space-y-8"
-                >
-                  <div className="pt-6 border-t border-ivory-200 mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Score trend timeline */}
-                    <ScoreHistoryChart history={history} />
-                    {/* Symptom breakdown map */}
-                    <TierDistributionChart latestResult={result} />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Card>
-        </div>
-      )}
     </div>
   );
 }

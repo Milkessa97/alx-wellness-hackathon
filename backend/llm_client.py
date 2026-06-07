@@ -1,7 +1,7 @@
 import os
 from groq import Groq
 from dotenv import load_dotenv
-from constants import LLM_MODEL, LLM_TEMPERATURE, LLM_MAX_TOKENS, TIER_CRISIS, TIER_ELEVATED
+from constants import LLM_MODEL, LLM_TEMPERATURE, LLM_MAX_TOKENS, TIER_CRISIS, TIER_ELEVATED,TIER_SAFE
 from corpus_loader import format_corpus_for_prompt
 from typing import List, Dict
 # Load .env relative to the directory containing this file
